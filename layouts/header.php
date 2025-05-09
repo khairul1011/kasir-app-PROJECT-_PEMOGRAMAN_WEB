@@ -19,5 +19,4 @@
     </div>
 </nav>
 
-<main class="p-4">
 
