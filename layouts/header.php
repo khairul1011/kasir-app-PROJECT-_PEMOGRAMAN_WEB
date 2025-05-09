@@ -12,10 +12,12 @@
 
 </head>
 <body class="bg-gray-100 text-gray-800">
-<nav class="bg-white shadow p-4">
+<nav class="bg-white shadow p-4 fixed w-full z-10">
     <div class="container mx-auto flex justify-between">
         <a href="http://localhost/kasir-app/dashboard/index.php" class="font-bold text-lg">KasirApp</a>
         <a href="../auth/logout.php" class="text-red-500">Logout</a>
     </div>
 </nav>
+
 <main class="p-4">
+

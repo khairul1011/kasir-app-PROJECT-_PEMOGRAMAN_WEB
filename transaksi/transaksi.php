@@ -27,26 +27,24 @@
     <?php include '../layouts/sidebar.php'; ?>
 
     <!-- Konten utama -->
-    <div class="flex-1 p-6">
-        <div class="p-6 max-w-7xl mx-auto">
-            <h2 class="text-lg font-semibold text-gray-700">Keranjang Penjualan</h2>
+    <div class="p-4 sm:ml-64">
+        <div class="flex-1">
+            <div class="p-6 max-w-7xl mx-auto">
+                <h2 class="text-lg font-semibold text-gray-700">Keranjang Penjualan</h2>
 
-            <!-- Cari dan Hasil Pencarian -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <!-- Cari Barang -->
-                <!-- Cari Barang -->
-            <div class="rounded shadow overflow-hidden">
-                <div class="bg-blue-600 text-white px-4 py-2 font-semibold flex items-center">
-                    <span class="mr-2">🔍</span> Cari Barang
-                </div>
-                <div class="bg-white p-4">
-                    <input type="text" id="inputCariBarang" class="w-full border p-2 rounded text-sm" placeholder="Masukkan kode atau nama barang" />
-                </div>
-            </div>
-
-
-                <!-- Hasil Pencarian -->
-                <div class="rounded shadow overflow-hidden">
+                <!-- Cari dan Hasil Pencarian -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <!-- Cari Barang -->
+                    <div class="rounded shadow overflow-hidden">
+                        <div class="bg-blue-600 text-white px-4 py-2 font-semibold flex items-center">
+                            <span class="mr-2">🔍</span> Cari Barang
+                        </div>
+                        <div class="bg-white p-4">
+                            <input type="text" id="inputCariBarang" class="w-full border p-2 rounded text-sm" placeholder="Masukkan kode atau nama barang" />
+                        </div>
+                    </div>
+                    <!-- Hasil Pencarian -->
+                    <div class="rounded shadow overflow-hidden">
                     <div class="bg-blue-600 text-white px-4 py-2 font-semibold flex items-center">
                         <span class="mr-2">📋</span> Hasil Pencarian
                     </div>
@@ -61,27 +59,12 @@
                                 </tr>
                             </thead>
                             <tbody id="tabelHasilPencarian">
-                                <!-- Data hasil pencarian dinamis ditampilkan di sini -->
-                                <!-- Contoh static:
-                                <tr>
-                                    <td class="px-2 py-1">001</td>
-                                    <td class="px-2 py-1">Indomie</td>
-                                    <td class="px-2 py-1">Rp3.000</td>
-                                    <td class="px-2 py-1">
-                                        <form method="POST" action="tambah_keranjang.php" class="flex gap-1">
-                                            <input type="hidden" name="produk_id" value="1">
-                                            <input type="number" name="qty" value="1" min="1" class="w-16 p-1 border rounded text-sm" />
-                                            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-2 py-1 rounded">+ Tambah</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                -->
                             </tbody>
                         </table>
                     </div>
                 </div>
+                </div>         
             </div>
-
             <!-- Tabel Kasir -->
             <div class="mt-6 bg-white rounded shadow border">
                 <div class="flex items-center justify-between bg-blue-600 text-white px-4 py-2 rounded-t">
@@ -90,7 +73,6 @@
                         <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold">RESET KERANJANG</button>
                     </form>
                 </div>
-
                 <div class="p-4">
                     <label class="text-sm font-medium text-gray-700 block mb-2">Tanggal</label>
                     <input type="text" value="<?= date('d F Y, H:i'); ?>" class="w-full px-3 py-2 border rounded bg-gray-100" readonly />
@@ -124,14 +106,13 @@
                                             <form method="POST" action="">
                                                 <input type="hidden" name="update_qty" value="1">
                                                 <input type="hidden" name="id" value="<?= $item['id'] ?>">
-                                                <input 
-                                                    type="number" 
-                                                    name="qty" 
-                                                    value="<?= $item['qty'] ?>" 
-                                                    min="1" 
-                                                    class="w-16 p-1 border rounded text-sm" 
-                                                    onchange="this.form.submit()" 
-                                                />
+                                                <input
+                                                    type="number"
+                                                    name="qty"
+                                                    value="<?= $item['qty'] ?>"
+                                                    min="1"
+                                                    class="w-16 p-1 border rounded text-sm"
+                                                    onchange="this.form.submit()" />
                                             </form>
                                         </td>
                                         <td>Rp<?= number_format($subtotal, 0, ',', '.') ?></td>
@@ -180,40 +161,39 @@
             </div>
         </div>
     </div>
-    
+
     <?php include '../layouts/footer.php'; ?>
 
     <script>
-    document.getElementById('inputCariBarang').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            let keyword = this.value;
-            fetch('hasil_pencarian.php?cari=' + keyword)
-                .then(res => res.text())
-                .then(data => {
-                    document.getElementById('tabelHasilPencarian').innerHTML = data;
-                });
-        }
-    });
+        document.getElementById('inputCariBarang').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                let keyword = this.value;
+                fetch('hasil_pencarian.php?cari=' + keyword)
+                    .then(res => res.text())
+                    .then(data => {
+                        document.getElementById('tabelHasilPencarian').innerHTML = data;
+                    });
+            }
+        });
 
 
-    const bayarInput = document.getElementById('bayar');
-    const kembaliInput = document.getElementById('kembali');
+        const bayarInput = document.getElementById('bayar');
+        const kembaliInput = document.getElementById('kembali');
 
-    bayarInput.addEventListener('input', function () {
-        const bayar = parseInt(this.value);
-        const total = <?= $totalSemua ?>;
-        if (!isNaN(bayar) && bayar >= total) {
-            kembaliInput.value = 'Rp' + (bayar - total).toLocaleString('id-ID');
-        } else {
-            kembaliInput.value = '';
-        }
-    });
+        bayarInput.addEventListener('input', function() {
+            const bayar = parseInt(this.value);
+            const total = <?= $totalSemua ?>;
+            if (!isNaN(bayar) && bayar >= total) {
+                kembaliInput.value = 'Rp' + (bayar - total).toLocaleString('id-ID');
+            } else {
+                kembaliInput.value = '';
+            }
+        });
 
-    fetch('hasil_pencarian.php?cari=' + keyword)
-    .then(res => res.text())
-    .then(data => {
-        document.getElementById('tabelHasilPencarian').innerHTML = data;
-    });
-
+        fetch('hasil_pencarian.php?cari=' + keyword)
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('tabelHasilPencarian').innerHTML = data;
+            });
     </script>
