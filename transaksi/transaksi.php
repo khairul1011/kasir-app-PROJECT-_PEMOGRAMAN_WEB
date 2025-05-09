@@ -28,9 +28,9 @@
 
     <!-- Konten utama -->
     <div class="p-4 sm:ml-64">
-        <div class="flex-1">
-            <div class="p-6 max-w-7xl mx-auto">
-                <h2 class="text-lg font-semibold text-gray-700">Keranjang Penjualan</h2>
+        <div class="flex-1 pt-4">
+            <div class="pt-6 max-w-7xl mx-auto">
+                <h2 class="text-xl font-semibold text-gray-700">Keranjang Penjualan</h2>
 
                 <!-- Cari dan Hasil Pencarian -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
