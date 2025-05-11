@@ -11,9 +11,12 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
             <div class="p-4 max-w-7xl mx-auto">
                 <div class="flex justify-between items-center mb-4">
                     <div class="flex gap-2">
-                        <a href="tambah.php" class="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded transition">
+                        <!-- <a href="tambah.php" class="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded transition">
                             <span>➕</span> Tambah Produk
-                        </a>
+                        </a> -->
+                        <button data-modal-target="crud-modal" data-modal-toggle="crud-modal" class="block text-white gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded transition" type="button">
+                            Tambah Produk ➕
+                        </button>
                         <button class="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded transition">📥 Import</button>
                     </div>
                     <div class="flex gap-2">
@@ -67,7 +70,6 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
                         <thead class="text-xs uppercase bg-gray-100 text-gray-700">
                             <tr>
                                 <th class="px-4 py-3"><input type="checkbox" /></th>
-                                <th class="px-4 py-3">Gambar</th>
                                 <th class="px-4 py-3">Nama</th>
                                 <th class="px-4 py-3">Kategori</th>
                                 <th class="px-4 py-3">Harga</th>
@@ -79,13 +81,13 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
                             <?php while ($row = mysqli_fetch_assoc($data)) : ?>
                                 <tr class="border-t hover:bg-gray-50">
                                     <td class="px-4 py-3"><input type="checkbox" /></td>
-                                    <td class="px-4 py-3">
+                                    <!-- <td class="px-4 py-3">
                                         <?php if (!empty($row['gambar'])): ?>
                                             <img src="../uploads/<?= htmlspecialchars($row['gambar']) ?>" alt="Gambar Produk" class="w-12 h-12 object-cover rounded" />
                                         <?php else: ?>
                                             <span class="text-gray-400 italic">Tidak ada gambar</span>
                                         <?php endif; ?>
-                                    </td>
+                                    </td> -->
                                     <td class="px-4 py-3"><?= htmlspecialchars($row['nama']) ?></td>
                                     <td class="px-4 py-3"><?= htmlspecialchars($row['kategori']) ?></td>
                                     <td class="px-4 py-3">Rp<?= number_format($row['harga'], 0, ',', '.') ?></td>
@@ -107,6 +109,77 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
             </div>
         </div>
     </div>
+    <!-- Main modal -->
+    <div id="crud-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        Tambah Produk Baru
+                    </h3>
+                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="crud-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <form class="p-4 md:p-5" action="tambah.php" method="POST">
+                    <div class="grid gap-4 mb-4 grid-cols-2">
+                        <div class="col-span-2">
+                            <label for="nama" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama</label>
+                            <input type="text" name="nama" id="nama" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Nama Produk" required="">
+                        </div>
+                        <div class="col-span-2 sm:col-span-1">
+                            <label for="harga" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Harga</label>
+                            <input type="number" name="harga" id="harga" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Rp10.000" required="">
+                        </div>
+                        <div class="col-span-2 sm:col-span-1">
+                            <label for="kategori" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Kategori</label>
+                            <select id="kategori" name="kategori" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" require>
+                                <option selected="">Pilih Kategori</option>
+                                <option value="TV">TV/Monitors</option>
+                                <option value="PC">PC</option>
+                                <option value="GA">Gaming/Console</option>
+                                <option value="PH">Phones</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2">
+                            <label for="stok" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pilih Kuantiti:</label>
+                            <div class="relative flex items-center max-w-[8rem]">
+                                <button type="button" id="decrement-button" data-input-counter-decrement="stok" class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                    </svg>
+                                </button>
+                                <input type="text" id="stok" name="stok" data-input-counter aria-describedby="helper-text-explanation" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" min="1" placeholder="1" required />
+                                <button type="button" id="increment-button" data-input-counter-increment="stok" class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">Please select a 5 digit number from 0 to 9.</p>
+                        </div>
+                        <div class="col-span-2">
+                            <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Description</label>
+                            <textarea id="description" name="deskripsi" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Tulis deskripsi produk"></textarea>
+                        </div>
+
+                    </div>
+                    <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        Tambah Produk
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </main>
 <script>
     function toggleDropdown(button) {
@@ -120,6 +193,7 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
             once: true
         });
     }
+
     function exportExcel() {
         window.open("export_excel.php", "_blank");
     }
