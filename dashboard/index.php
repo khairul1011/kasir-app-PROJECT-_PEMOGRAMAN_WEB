@@ -1,11 +1,13 @@
-<?php include '../layouts/header.php'; ?>
-<?php include '../config/koneksi.php'; ?>
-<?php include '../layouts/sidebar.php'; ?>
-<main>
-    <div class="p-4 sm:ml-64">
-        <div class="flex-1 p-auto">
-            <div class="max-w-7xl mx-auto">
-                <h1 class="text-3xl font-bold mb-6">Dashboard Kasir</h1>
+<?php
+include '../config/koneksi.php';
+include '../layouts/header.php';
+include '../layouts/sidebar.php';
+?>
+<main class="pt-10">
+    <div class="p-4">
+        <div class="p-auto">
+            <div class="p-4 max-w-7xl mx-auto">
+                 <h1 class="text-3xl font-bold mb-6">Dashboard Kasir</h1>
                 <!-- Shortcut Report -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                     <div class="bg-indigo-100 p-6 rounded-2xl">
@@ -53,7 +55,6 @@
         </div>
     </div>
 </main>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const ctx = document.getElementById('cashflowChart').getContext('2d');
@@ -94,4 +95,4 @@
         }
     });
 </script>
-<?php include '../layouts/sidebar.php'; ?>
+<?php include '../layouts/footer.php'; ?>

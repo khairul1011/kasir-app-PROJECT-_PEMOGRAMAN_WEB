@@ -6,7 +6,7 @@ include '../layouts/sidebar.php';
 $data = mysqli_query($koneksi, "SELECT * FROM produk");
 ?>
 <main class="pt-10">
-    <div class="p-4 sm:ml-64">
+    <div class="p-4">
         <div class="p-auto">
             <div class="p-4 max-w-7xl mx-auto">
                 <div class="flex justify-between items-center mb-4">

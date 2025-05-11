@@ -27,7 +27,7 @@
     <?php include '../layouts/sidebar.php'; ?>
     <main class="p-4">
         <!-- Konten utama -->
-        <div class="p-4 sm:ml-64">
+        <div class="p-4">
             <div class="flex-1 pt-4">
                 <div class="pt-6 max-w-7xl mx-auto">
                     <h2 class="text-xl font-semibold text-gray-700">Keranjang Penjualan</h2>
