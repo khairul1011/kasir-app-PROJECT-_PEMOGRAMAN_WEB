@@ -11,9 +11,6 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
             <div class="p-4 max-w-7xl mx-auto">
                 <div class="flex justify-between items-center mb-4">
                     <div class="flex gap-2">
-                        <!-- <a href="tambah.php" class="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded transition">
-                            <span>➕</span> Tambah Produk
-                        </a> -->
                         <button data-modal-target="crud-modal" data-modal-toggle="crud-modal" class="block text-white gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded transition" type="button">
                             Tambah Produk ➕
                         </button>
@@ -53,7 +50,6 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
                             </svg>
                             &nbsp;Excel
                         </button>
-
                         <button onclick="window.open('print.php', '_blank')"
                             class="flex items-center justify-center border border-blue-500 text-blue-500 px-3 py-2 rounded hover:bg-blue-50 transition">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
@@ -61,50 +57,88 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
                             </svg>
                             &nbsp;Print
                         </button>
-
                     </div>
                 </div>
-                <input type="text" placeholder="Cari Produk..." class="w-full p-2 border border-gray-300 rounded mb-4" />
+                <div class="flex justify-end items-center mb-4">
+                    <form class="max-w-lg">
+                        <div class="flex">
+                            <!-- Dropdown Button -->
+                            <button id="dropdown-button" data-dropdown-toggle="dropdown" class="shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600" type="button">
+                                Semua Kategori
+                                <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                                </svg>
+                            </button>
+    
+                            <!-- Dropdown Menu -->
+                            <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-button">
+                                    <li>
+                                        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Minuman</button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Makanan</button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Alat Tulis</button>
+                                    </li>
+                                </ul>
+                            </div>
+    
+                            <!-- Input Search -->
+                            <div class="relative w-full">
+                                <input type="search" id="search-dropdown" class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500" placeholder="Cari Produk..." required />
+                                <button type="submit" class="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                                    </svg>
+                                    <span class="sr-only">Search</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-700 bg-white shadow rounded-lg">
-                        <thead class="text-xs uppercase bg-gray-100 text-gray-700">
-                            <tr>
-                                <th class="px-4 py-3"><input type="checkbox" /></th>
-                                <th class="px-4 py-3">Nama</th>
-                                <th class="px-4 py-3">Kategori</th>
-                                <th class="px-4 py-3">Harga</th>
-                                <th class="px-4 py-3">Stok</th>
-                                <th class="px-4 py-3">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php while ($row = mysqli_fetch_assoc($data)) : ?>
-                                <tr class="border-t hover:bg-gray-50">
-                                    <td class="px-4 py-3"><input type="checkbox" /></td>
-                                    <!-- <td class="px-4 py-3">
-                                        <?php if (!empty($row['gambar'])): ?>
-                                            <img src="../uploads/<?= htmlspecialchars($row['gambar']) ?>" alt="Gambar Produk" class="w-12 h-12 object-cover rounded" />
-                                        <?php else: ?>
-                                            <span class="text-gray-400 italic">Tidak ada gambar</span>
-                                        <?php endif; ?>
-                                    </td> -->
-                                    <td class="px-4 py-3"><?= htmlspecialchars($row['nama']) ?></td>
-                                    <td class="px-4 py-3"><?= htmlspecialchars($row['kategori']) ?></td>
-                                    <td class="px-4 py-3">Rp<?= number_format($row['harga'], 0, ',', '.') ?></td>
-                                    <td class="px-4 py-3"><?= $row['stok'] ?></td>
-                                    <td class="px-4 py-3">
-                                        <div class="relative inline-block text-left">
-                                            <button onclick="toggleDropdown(this)" class="text-blue-600 font-semibold hover:underline">Action ⬇</button>
-                                            <div class="hidden absolute z-10 mt-2 w-28 bg-white border rounded shadow-md">
-                                                <a href="edit.php?id=<?= $row['id'] ?>" class="block px-4 py-2 hover:bg-gray-100">Edit</a>
-                                                <a href="hapus.php?id=<?= $row['id'] ?>" class="block px-4 py-2 hover:bg-gray-100 text-red-500" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
-                                            </div>
+                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="p-4">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                         </div>
-                                    </td>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">Nama</th>
+                                    <th scope="col" class="px-6 py-3">Kategori</th>
+                                    <th scope="col" class="px-6 py-3">Harga</th>
+                                    <th scope="col" class="px-6 py-3">Stok</th>
+                                    <th scope="col" class="px-6 py-3">Aksi</th>
                                 </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <?php while ($row = mysqli_fetch_assoc($data)) : ?>
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <td class="w-4 p-4">
+                                            <div class="flex items-center">
+                                                <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            </div>
+                                        </td>
+                                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                            <?= htmlspecialchars($row['nama']) ?>
+                                        </th>
+                                        <td class="px-6 py-4"><?= htmlspecialchars($row['kategori']) ?></td>
+                                        <td class="px-6 py-4">Rp<?= number_format($row['harga'], 0, ',', '.') ?></td>
+                                        <td class="px-6 py-4"><?= $row['stok'] ?></td>
+                                        <td class="flex items-center px-6 py-4">
+                                            <a href="edit.php?id=<?= $row['id'] ?>" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                            <a href="hapus.php?id=<?= $row['id'] ?>" class="font-medium text-red-600 dark:text-red-500 hover:underline ms-3" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -198,4 +232,5 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
         window.open("export_excel.php", "_blank");
     }
 </script>
+<script src="https://unpkg.com/flowbite@2.3.0/dist/flowbite.min.js"></script>
 <?php include '../layouts/footer.php'; ?>
