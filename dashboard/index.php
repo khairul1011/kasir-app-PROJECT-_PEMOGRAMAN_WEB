@@ -3,12 +3,11 @@ include '../config/koneksi.php';
 include '../layouts/header.php';
 include '../layouts/sidebar.php';
 ?>
-<main class="pt-10">
+<main class="pt-10 lg:ml-64 transition-all duration-300">
     <div class="p-4">
         <div class="p-auto">
             <div class="p-4 max-w-7xl mx-auto">
                  <h1 class="text-3xl font-bold mb-6">Dashboard Kasir</h1>
-                <!-- Shortcut Report -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                     <div class="bg-indigo-100 p-6 rounded-2xl">
                         <div class="text-indigo-800 text-2xl font-semibold">Rp24.575</div>
@@ -31,7 +30,6 @@ include '../layouts/sidebar.php';
                         <div class="text-xs mt-2 text-green-600">+65%</div>
                     </div>
                 </div>
-                <!-- Navigasi Fitur -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                     <a href="../transaksi/transaksi.php" class="bg-white p-6 rounded-2xl shadow hover:bg-blue-50 transition">
                         <h2 class="text-xl font-bold mb-2">Transaksi</h2>
@@ -46,7 +44,6 @@ include '../layouts/sidebar.php';
                         <p>Lihat data pelanggan</p>
                     </a>
                 </div>
-                <!-- Cashflow Chart -->
                 <div class="bg-white p-6 rounded-2xl shadow" style="height: 300px;">
                     <h2 class="text-xl font-bold mb-4">Arus Kas</h2>
                     <canvas id="cashflowChart" class="w-full h-full"></canvas>
