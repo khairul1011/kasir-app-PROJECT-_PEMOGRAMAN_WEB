@@ -3,7 +3,32 @@ include '../config/koneksi.php';
 include '../layouts/header.php';
 include '../layouts/sidebar.php';
 
-$data = mysqli_query($koneksi, "SELECT * FROM produk");
+// Ambil kata kunci pencarian dari URL
+$search_keyword = $_GET['search_keyword'] ?? '';
+$kategori_filter = $_GET['kategori'] ?? '';
+
+// Ambil kategori unik dari database untuk dropdown
+// Ini perlu dilakukan sebelum bagian HTML agar dropdown bisa terisi
+$kategori_options = [];
+$kategori_result = mysqli_query($koneksi, "SELECT DISTINCT kategori FROM produk");
+while ($cat = mysqli_fetch_assoc($kategori_result)) {
+    $kategori_options[] = htmlspecialchars($cat['kategori']);
+}
+
+// Logic untuk filter produk (akan dipindahkan ke file terpisah untuk Ajax)
+// Untuk saat ini, kita akan tetap memiliki logic ini di sini
+// agar halaman tetap berfungsi saat pertama kali dimuat atau di-refresh tanpa Ajax.
+$query = "SELECT * FROM produk WHERE 1=1";
+
+if (!empty($search_keyword)) {
+    $query .= " AND (nama LIKE '%" . mysqli_real_escape_string($koneksi, $search_keyword) . "%' OR deskripsi LIKE '%" . mysqli_real_escape_string($koneksi, $search_keyword) . "%')";
+}
+
+if (!empty($kategori_filter) && $kategori_filter !== 'Semua Kategori') {
+    $query .= " AND kategori = '" . mysqli_real_escape_string($koneksi, $kategori_filter) . "'";
+}
+
+$data = mysqli_query($koneksi, $query);
 ?>
 <main class="pt-10">
     <div class="p-4">
@@ -34,7 +59,6 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
                         </button>
                         <button onclick="exportExcel()"
                             class="flex items-center justify-center border border-green-500 text-green-500 px-3 py-2 rounded hover:bg-green-50 transition">
-                            <!-- ikon -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 48 48">
                                 <defs>
                                     <mask id="ipSExcel0">
@@ -59,43 +83,32 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
                         </button>
                     </div>
                 </div>
+
                 <div class="flex justify-end items-center mb-4">
-                    <form class="max-w-lg">
-                        <div class="flex">
-                            <!-- Dropdown Button -->
-                            <button id="dropdown-button" data-dropdown-toggle="dropdown" class="shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600" type="button">
-                                Semua Kategori
-                                <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-                                </svg>
-                            </button>
-    
-                            <!-- Dropdown Menu -->
-                            <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
-                                <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-button">
-                                    <li>
-                                        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Minuman</button>
-                                    </li>
-                                    <li>
-                                        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Makanan</button>
-                                    </li>
-                                    <li>
-                                        <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Alat Tulis</button>
-                                    </li>
-                                </ul>
-                            </div>
-    
-                            <!-- Input Search -->
-                            <div class="relative w-full">
-                                <input type="search" id="search-dropdown" class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500" placeholder="Cari Produk..." required />
-                                <button type="submit" class="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                                    </svg>
-                                    <span class="sr-only">Search</span>
-                                </button>
-                            </div>
+                    <form id="searchForm" class="w-full md:w-auto flex" method="GET" action="">
+                        <button id="dropdown-button" data-dropdown-toggle="dropdown" class="shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600" type="button">
+                            <?= htmlspecialchars($kategori_filter ?: 'Semua Kategori') ?>
+                            <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                            </svg>
+                        </button>
+
+                        <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+                            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-button">
+                                <li>
+                                    <button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-category-value="Semua Kategori">Semua Kategori</button>
+                                </li>
+                                <?php
+                                foreach ($kategori_options as $cat_option) {
+                                    echo '<li><button type="button" class="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-category-value="' . $cat_option . '">' . $cat_option . '</button></li>';
+                                }
+                                ?>
+                            </ul>
                         </div>
+
+                        <div class="relative w-full">
+                            <input type="search" id="default-search" name="search_keyword" value="<?= htmlspecialchars($search_keyword) ?>" class="block p-2.5 w-full z-20 text-sm text-gray-900 border border-gray-300 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Cari Produk..." />
+                            </div>
                     </form>
                 </div>
                 <div class="overflow-x-auto">
@@ -115,26 +128,32 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
                                     <th scope="col" class="px-6 py-3">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <?php while ($row = mysqli_fetch_assoc($data)) : ?>
-                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                        <td class="w-4 p-4">
-                                            <div class="flex items-center">
-                                                <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                            </div>
-                                        </td>
-                                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            <?= htmlspecialchars($row['nama']) ?>
-                                        </th>
-                                        <td class="px-6 py-4"><?= htmlspecialchars($row['kategori']) ?></td>
-                                        <td class="px-6 py-4">Rp<?= number_format($row['harga'], 0, ',', '.') ?></td>
-                                        <td class="px-6 py-4"><?= $row['stok'] ?></td>
-                                        <td class="flex items-center px-6 py-4">
-                                            <a href="edit.php?id=<?= $row['id'] ?>" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                                            <a href="hapus.php?id=<?= $row['id'] ?>" class="font-medium text-red-600 dark:text-red-500 hover:underline ms-3" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
-                                        </td>
+                            <tbody id="produkTableBody">
+                                <?php if (mysqli_num_rows($data) > 0) : ?>
+                                    <?php while ($row = mysqli_fetch_assoc($data)) : ?>
+                                        <tr class="bg-dark border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                            <td class="w-4 p-4">
+                                                <div class="flex items-center">
+                                                    <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                                </div>
+                                            </td>
+                                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                <?= htmlspecialchars($row['nama']) ?>
+                                            </th>
+                                            <td class="px-6 py-4"><?= htmlspecialchars($row['kategori']) ?></td>
+                                            <td class="px-6 py-4">Rp<?= number_format($row['harga'], 0, ',', '.') ?></td>
+                                            <td class="px-6 py-4"><?= $row['stok'] ?></td>
+                                            <td class="flex items-center px-6 py-4">
+                                                <a href="edit.php?id=<?= $row['id'] ?>" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                                <a href="hapus.php?id=<?= $row['id'] ?>" class="font-medium text-red-600 dark:text-red-500 hover:underline ms-3" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
+                                            </td>
+                                        </tr>
+                                    <?php endwhile; ?>
+                                <?php else : ?>
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                        <td colspan="6" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">Tidak ada produk ditemukan.</td>
                                     </tr>
-                                <?php endwhile; ?>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
@@ -143,12 +162,9 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
             </div>
         </div>
     </div>
-    <!-- Main modal -->
     <div id="crud-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-md max-h-full">
-            <!-- Modal content -->
             <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-                <!-- Modal header -->
                 <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                         Tambah Produk Baru
@@ -160,7 +176,6 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
                         <span class="sr-only">Close modal</span>
                     </button>
                 </div>
-                <!-- Modal body -->
                 <form class="p-4 md:p-5" action="tambah.php" method="POST">
                     <div class="grid gap-4 mb-4 grid-cols-2">
                         <div class="col-span-2">
@@ -173,13 +188,12 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
                         </div>
                         <div class="col-span-2 sm:col-span-1">
                             <label for="kategori" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Kategori</label>
-                            <select id="kategori" name="kategori" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" require>
-                                <option selected="">Pilih Kategori</option>
-                                <option value="TV">TV/Monitors</option>
-                                <option value="PC">PC</option>
-                                <option value="GA">Gaming/Console</option>
-                                <option value="PH">Phones</option>
-                            </select>
+                            <select id="kategori" name="kategori" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+                                <option value="">Pilih Kategori</option>
+                                <option value="Minuman">Minuman</option>
+                                <option value="Makanan">Makanan</option>
+                                <option value="Alat Tulis">Alat Tulis</option>
+                                </select>
                         </div>
                         <div class="col-span-2">
                             <label for="stok" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pilih Kuantiti:</label>
@@ -216,21 +230,76 @@ $data = mysqli_query($koneksi, "SELECT * FROM produk");
     </div>
 </main>
 <script>
-    function toggleDropdown(button) {
-        const menu = button.nextElementSibling;
-        menu.classList.toggle('hidden');
-        document.addEventListener('click', function(e) {
-            if (!button.parentElement.contains(e.target)) {
-                menu.classList.add('hidden');
-            }
-        }, {
-            once: true
-        });
-    }
-
     function exportExcel() {
         window.open("export_excel.php", "_blank");
     }
+
+    // Logic for increment/decrement buttons for quantity input
+    document.querySelectorAll('[data-input-counter-decrement]').forEach(button => {
+        button.addEventListener('click', () => {
+            const targetId = button.getAttribute('data-input-counter-decrement');
+            const input = document.getElementById(targetId);
+            let value = parseInt(input.value);
+            if (!isNaN(value) && value > parseInt(input.min)) {
+                input.value = value - 1;
+            }
+        });
+    });
+
+    document.querySelectorAll('[data-input-counter-increment]').forEach(button => {
+        button.addEventListener('click', () => {
+            const targetId = button.getAttribute('data-input-counter-increment');
+            const input = document.getElementById(targetId);
+            let value = parseInt(input.value);
+            if (!isNaN(value)) {
+                input.value = value + 1;
+            } else {
+                input.value = 1; // Default to 1 if empty or not a number
+            }
+        });
+    });
+
+    // START: AJAX for instant search and filter
+    const searchInput = document.getElementById('default-search');
+    const kategoriButtons = document.querySelectorAll('#dropdown button[data-category-value]');
+    const produkTableBody = document.getElementById('produkTableBody');
+    const dropdownButtonText = document.querySelector('#dropdown-button');
+
+    let currentSearchKeyword = '<?= $search_keyword ?>';
+    let currentKategoriFilter = '<?= $kategori_filter ?>';
+
+    // Function to fetch and update table
+    function fetchAndRenderProduk(keyword, kategori) {
+        const url = `get_produk_data.php?search_keyword=${encodeURIComponent(keyword)}&kategori=${encodeURIComponent(kategori)}`;
+
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                produkTableBody.innerHTML = html;
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    // Event listener for search input (typing)
+    searchInput.addEventListener('input', () => {
+        currentSearchKeyword = searchInput.value;
+        fetchAndRenderProduk(currentSearchKeyword, currentKategoriFilter);
+    });
+
+    // Event listeners for category buttons
+    kategoriButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            currentKategoriFilter = button.getAttribute('data-category-value');
+            dropdownButtonText.textContent = button.textContent; // Update dropdown button text
+            fetchAndRenderProduk(currentSearchKeyword, currentKategoriFilter);
+            // Close the dropdown after selection (Flowbite usually handles this, but good to ensure)
+            const dropdown = document.getElementById('dropdown');
+            if (!dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    });
+
 </script>
 <script src="https://unpkg.com/flowbite@2.3.0/dist/flowbite.min.js"></script>
 <?php include '../layouts/footer.php'; ?>
